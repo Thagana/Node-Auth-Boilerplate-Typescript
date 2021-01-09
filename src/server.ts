@@ -1,19 +1,26 @@
-import http from 'http';
 import * as dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import bookRoutes from './routes/book';
 import home from './routes/home';
+import { dbConfig } from './models';
+
 // utils
 import logging from './utils/logging';
+
 dotenv.config();
 
 const NAMESPACE = 'Server';
-
 const PORT: number = parseInt(process.env.PORT as string, 10);
-
 const app = express();
+
+dbConfig
+    .authenticate()
+    .then(() => console.log('connected to db'))
+    .catch((error) => {
+        console.log(error);
+    });
 
 app.use(helmet());
 app.use(cors());
