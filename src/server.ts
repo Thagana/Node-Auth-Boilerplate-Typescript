@@ -4,7 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import bookRoutes from './routes/book';
-
+import home from './routes/home';
 // utils
 import logging from './utils/logging';
 dotenv.config();
@@ -19,18 +19,32 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.use('/books', bookRoutes);
-/** Log the request */
-app.use((req, res, next) => {
-    /** Log the req */
-    logging.info(`METHOD: [${req.method}] - URL: [${req.url}] - IP: [${req.socket.remoteAddress}]`, NAMESPACE);
+/** Log the requestuest */
+app.use((request, response, next) => {
+    /** Log the request */
+    logging.info(`METHOD: [${request.method}] - URL: [${request.url}] - IP: [${request.socket.remoteAddress}]`, NAMESPACE);
 
-    res.on('finish', () => {
-        /** Log the res */
-        logging.info(`METHOD: [${req.method}] - URL: [${req.url}] - STATUS: [${res.statusCode}] - IP: [${req.socket.remoteAddress}]`, NAMESPACE);
+    response.on('finish', () => {
+        /** Log the response */
+        logging.info(`METHOD: [${request.method}] - URL: [${request.url}] - STATUS: [${response.statusCode}] - IP: [${request.socket.remoteAddress}]`, NAMESPACE);
     });
 
     next();
 });
+
+app.use((request, response, next) => {
+    response.header('Access-Control-Allow-Origin', '*');
+    response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+
+    if (request.method == 'OPTIONS') {
+        response.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+        return response.status(200).json({});
+    }
+
+    next();
+});
+
+app.use('/books', bookRoutes);
+app.use('/', home);
 
 const server = app.listen(PORT, () => logging.info(NAMESPACE, `Server is running ${PORT}`));
