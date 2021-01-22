@@ -1,4 +1,5 @@
-import { NextFunction, Request, response, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { User } from '../models';
 import { v4 as uuidv4 } from 'uuid';
 import logging from '../utils/logging';
 
