@@ -2,10 +2,11 @@ import * as dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import bookRoutes from './routes/book';
-import home from './routes/home';
 import { dbConfig } from './models';
 
+// Routes
+import bookRoutes from './routes/book';
+import authRoutes from './routes/auth';
 // utils
 import logging from './utils/logging';
 
@@ -52,6 +53,6 @@ app.use((request, response, next) => {
 });
 
 app.use('/books', bookRoutes);
-app.use('/', home);
+app.use('/', authRoutes);
 
 const server = app.listen(PORT, () => logging.info(NAMESPACE, `Server is running ${PORT}`));
